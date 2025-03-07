@@ -47,6 +47,14 @@ def parse_arguments():
     return parser.parse_args()
 
 def main(args): 
+    # Training configs
+    training_cfg_path = args.config_path
+    training_cfg = load_config(conf_path=training_cfg_path)
+
+    news_encoder_cfg = training_cfg['news_encoder']
+    user_encoder_cfg = training_cfg['user_encoder']
+    general_cfg = training_cfg['general']
+
     # Reproducibility
     seed = general_cfg['seed']
 
@@ -56,13 +64,6 @@ def main(args):
 
     pl.seed_everything(seed, verbose=False)
 
-    # Training configs
-    training_cfg_path = args.config_path
-    training_cfg = load_config(conf_path=training_cfg_path)
-
-    news_encoder_cfg = training_cfg['news_encoder']
-    user_encoder_cfg = training_cfg['user_encoder']
-    general_cfg = training_cfg['general']
     
     # Loading pre-trained language model
     model_dir = args.model_dir

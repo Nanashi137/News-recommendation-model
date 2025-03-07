@@ -7,69 +7,67 @@ from transformers import AutoTokenizer, AutoModel
 
 def parse_arguments():
     parser = argparse.ArgumentParser(
-        description="Download pre-trained language model and MIND dataset"
+        description="Download pre-trained language model and MIND dataset."
     )
 
     parser.add_argument(
-        "--model_name", type=str, nargs="?", help="Pre-trained language model from HuggingFace", default="microsoft/MiniLM-L12-H384-uncased"
+        "--model_name", type=str, nargs="?", help="Pre-trained language model from HuggingFace.", default="microsoft/MiniLM-L12-H384-uncased"
     )
 
     parser.add_argument(
-        "--model_save_dir", type=str, nargs="?", help="Path to store downloaded model"
+        "--model_save_dir", type=str, nargs="?", help="Path to store downloaded model."
     )
 
     parser.add_argument(
-        "--dataset_type", type=str, nargs="?", choices=["small", "large", "demo"], help="MIND dataset type", default="small"
+        "--dataset_type", type=str, nargs="?", choices=["small", "large", "demo"], help="MIND dataset type.", default="small"
     )
 
     parser.add_argument(
-        "--data_dir", type=str, nargs="?", help="Path to save downloaded MIND dataset", default="./data"
+        "--data_dir", type=str, nargs="?", help="Path to the downloaded zip files of MIND dataset.", default="./data"
+    )
+
+    parser.add_argument(
+        "--zip_del", type=bool, nargs="?", help="Delete data zip file after extracting.", default=False
     )
 
     return parser.parse_args()
 
-def download_mind(dataset_type, root_folder):
-    # Mapping dataset type to URLs
-    mind_urls = {
-        "small": {
-            "train": "https://mind201910small.blob.core.windows.net/release/MINDsmall_train.zip",
-            "dev": "https://mind201910small.blob.core.windows.net/release/MINDsmall_dev.zip"
-        },
-        "large": {
-            "train": "https://mind201910.blob.core.windows.net/release/MINDlarge_train.zip",
-            "dev": "https://mind201910.blob.core.windows.net/release/MINDlarge_dev.zip"
-        },
-        "demo": {
-            "train": "https://recodatasets.z20.web.core.windows.net/newsrec/MINDdemo_train.zip",
-            "dev": "https://recodatasets.z20.web.core.windows.net/newsrec/MINDdemo_dev.zip"
-        }
-    }
-
+def extract_mind(dataset_type, root_folder, data_del):
+    
+    # mind_urls = {
+    #     "small": {
+    #         "train": "https://mind201910small.blob.core.windows.net/release/MINDsmall_train.zip",
+    #         "dev": "https://mind201910small.blob.core.windows.net/release/MINDsmall_dev.zip"
+    #     },
+    #     "large": {
+    #         "train": "https://mind201910.blob.core.windows.net/release/MINDlarge_train.zip",
+    #         "dev": "https://mind201910.blob.core.windows.net/release/MINDlarge_dev.zip"
+    #     },
+    #     "demo": {
+    #         "train": "https://recodatasets.z20.web.core.windows.net/newsrec/MINDdemo_train.zip",
+    #         "dev": "https://recodatasets.z20.web.core.windows.net/newsrec/MINDdemo_dev.zip"
+    #     }
+    # }
 
     print(f"Downloading MIND {dataset_type} dataset...")
-    os.makedirs(root_folder, exist_ok=True)
-
-    
     for split in ["train", "dev"]:
-        url = mind_urls[dataset_type][split]
-        zip_filename = os.path.join(root_folder, f"MIND{dataset_type}_{split}.zip")
+        zip_path = os.path.join(root_folder, f"MIND{dataset_type}_{split}.zip")
         extract_folder = os.path.join(root_folder, split)
 
-        
-        os.makedirs(extract_folder, exist_ok=True)
+        if os.path.exists(zip_path):
+            print(f"Extracting {zip_path} to {extract_folder}")
+            os.makedirs(extract_folder, exist_ok=True)
 
-        print(f"Downloading {split} set...")
-        urllib.request.urlretrieve(url, zip_filename)
-        print(f"Downloaded: {zip_filename}")
+            # Extract ZIP file
+            with zipfile.ZipFile(zip_path, "r") as zip_ref:
+                zip_ref.extractall(extract_folder)
 
-        print(f"Extracting {zip_filename} to {extract_folder}...")
-        with zipfile.ZipFile(zip_filename, "r") as zip_ref:
-            zip_ref.extractall(extract_folder)
-
-        os.remove(zip_filename)
-        print(f"Removed {zip_filename}")
-
-    print("Download complete!")
+            # Remove ZIP file after extraction
+            if data_del:
+                os.remove(zip_path)
+            print(f"Extraction complete: {extract_folder}")
+        else:
+            print(f"Skipping {zip_path}: File not found. Please download and place it in {root_folder}.")
 
 def main(args):
     # Download pre-trained languague model
@@ -86,9 +84,12 @@ def main(args):
 
     # Download MIND dataset
     data_dir = args.data_dir
-    dataset_type = args.data_type
+    dataset_type = args.dataset_type
+    data_del = args.zip_del
 
-    download_mind(dataset_type=dataset_type, root_folder=data_dir)
+    extract_mind(dataset_type=dataset_type, root_folder=data_dir, data_del=data_del)
+
+    print("Finished!")
 
 if __name__ == "__main__":
     args = parse_arguments()

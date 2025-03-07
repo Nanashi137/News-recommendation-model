@@ -2,5 +2,6 @@ pandas==2.2.3
 python-dotenv==1.0.1
 pytorch_lightning==2.5.0.post0
 PyYAML==6.0
+tensorboard
 scikit_learn==1.6.1
 transformers==4.49.0
