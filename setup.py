@@ -19,7 +19,7 @@ def parse_arguments():
     )
 
     parser.add_argument(
-        --"dataset_type", type=str, nargs="?", choices=["small", "large", "demo"], help="MIND dataset type", default="small"
+        "--dataset_type", type=str, nargs="?", choices=["small", "large", "demo"], help="MIND dataset type", default="small"
     )
 
     parser.add_argument(
