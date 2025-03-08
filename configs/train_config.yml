@@ -10,8 +10,8 @@ user_encoder:
 general: 
   seed: 42
   batch_size: 64
-  num_workers: 4
-  max_epochs: 5
+  num_workers: 8
+  max_epochs: 10
   early_stopping: 3
   max_history_length: 35
   max_title_length: 20
