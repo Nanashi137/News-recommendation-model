@@ -17,11 +17,11 @@ class NewsRecommender(pl.LightningModule):
 
         # News encoder
         self.news_encoder = news_encoder
-        self.lr_news = news_encoder_lr
+        self.lr_news = float(news_encoder_lr)
 
         # User encoder
         self.user_encoder = user_encoder
-        self.lr_user = user_encoder_lr
+        self.lr_user = float(user_encoder_lr)
 
         # Click predictor 
         self.click_predictor = click_predictor 
@@ -51,7 +51,7 @@ class NewsRecommender(pl.LightningModule):
     def training_step(self, batch, batch_idx):
         clicked_news_input_ids, clicked_news_attention_mask, history_mask, candidate_news_input_ids, candidate_news_attention_mask, labels = batch.values()
         logits = self.forward(clicked_news_input_ids, clicked_news_attention_mask, history_mask, candidate_news_input_ids, candidate_news_attention_mask)
-        loss = self.loss_fn(inputs=logits, target=labels)
+        loss = self.loss_fn(logits, labels)
 
         self.log("train_loss", loss, prog_bar=True, on_epoch=True, logger=True)
         
