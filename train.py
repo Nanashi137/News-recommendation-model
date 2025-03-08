@@ -70,6 +70,7 @@ def main(args):
 
     tokenizer = AutoTokenizer.from_pretrained(model_dir)
     encoder = AutoModel.from_pretrained(model_dir)
+    encoder.train()
     encoder_cfg = AutoConfig.from_pretrained(model_dir)
 
     # Data paths
@@ -98,9 +99,10 @@ def main(args):
 
     # Dataloader 
     num_workers = general_cfg["num_workers"]
-    train_loader = DataLoader(train_dataset, batch_size=32, shuffle=True,  collate_fn= lambda b:CustomCollator(batch=b, tokenizer=tokenizer), num_workers=8, persistent_workers=True)
-    val_loader   = DataLoader(val_dataset,   batch_size=32, shuffle=False, collate_fn= lambda b:CustomCollator(batch=b, tokenizer=tokenizer), num_workers=8, persistent_workers=True)
-    test_loader  = DataLoader(test_dataset,  batch_size=32, shuffle=False, collate_fn= lambda b:CustomCollator(batch=b, tokenizer=tokenizer), num_workers=8, persistent_workers=False)
+    batch_size = general_cfg["batch_size"]
+    train_loader = DataLoader(train_dataset, batch_size=batch_size, shuffle=True,  collate_fn= lambda b:CustomCollator(batch=b, tokenizer=tokenizer), num_workers=num_workers, persistent_workers=True)
+    val_loader   = DataLoader(val_dataset,   batch_size=batch_size, shuffle=False, collate_fn= lambda b:CustomCollator(batch=b, tokenizer=tokenizer), num_workers=num_workers, persistent_workers=True)
+    test_loader  = DataLoader(test_dataset,  batch_size=batch_size, shuffle=False, collate_fn= lambda b:CustomCollator(batch=b, tokenizer=tokenizer), num_workers=num_workers, persistent_workers=False)
 
     # Load news recommendation model's modules
     news_encoder = NewsEncoder(encoder=encoder, encoder_cfg=encoder_cfg, embedding_dim=general_cfg['embedding_dim'], additive_dim=news_encoder_cfg['projection_dim'],)
@@ -123,7 +125,7 @@ def main(args):
                 monitor="val_loss",
                 filename="{epoch:02d}-{val_loss:.4f}",
                 save_last=True,
-                mode="max",
+                mode="min",
             ),
             ModelSummary(-1)    
         ]
@@ -144,6 +146,16 @@ def main(args):
         val_dataloaders=val_loader,
         ckpt_path= None)
     print("Training completed!")
+
+    # Testing
+    print("Testing...")
+    trainer.test(model=news_recommender, 
+            dataloaders=test_loader, 
+            ckpt_path=None)
+    print("Testing completed!")
+
+    print("Completed!")
+
 if __name__ == "__main__":
     args = parse_arguments()
     main(args=args)

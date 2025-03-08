@@ -15,7 +15,7 @@ class AdditiveAttention(nn.Module):
         projected_matrix = self.projection(embeddings)
         scores = torch.matmul(torch.tanh(projected_matrix), self.w_q)
 
-        MASKING_VALUE = -1e+30 if scores.dtype == torch.float32 else -1e+4
+        MASKING_VALUE = -1e+10 if scores.dtype == torch.float32 else -1e+4
         scores = scores.masked_fill(mask==0, MASKING_VALUE) if mask is not None else scores
         attention_score  = torch.softmax(scores, dim=1)
         weighted_outputs = torch.einsum("b i, b i j -> b j", attention_score, embeddings)
