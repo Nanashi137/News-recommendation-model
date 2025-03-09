@@ -57,11 +57,8 @@ class NewsRecommender(pl.LightningModule):
     def training_step(self, batch, batch_idx):
         clicked_news_input_ids, clicked_news_attention_mask, history_mask, candidate_news_input_ids, candidate_news_attention_mask, labels = batch.values()
         logits = self.forward(clicked_news_input_ids, clicked_news_attention_mask, history_mask, candidate_news_input_ids, candidate_news_attention_mask)
-        
-        # Compute loss
-        loss = self.loss_fn(logits, labels)
+        loss = self.loss_fn(inputs=logits, target=labels)
 
-        # Log metrics
         self.log("train_loss", loss, prog_bar=True, on_epoch=True, logger=True)
         
         return loss
