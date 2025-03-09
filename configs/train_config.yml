@@ -1,19 +1,19 @@
 news_encoder: 
   learning_rate: 3e-6
-  projection_dim: 128
+  projection_dim: 100
   
 user_encoder: 
   learning_rate: 3e-4
-  projection_dim: 128
+  projection_dim: 100
   n_layers: 1
   
 general: 
   seed: 42
   batch_size: 64
-  num_workers: 8
+  num_workers: 12
   max_epochs: 10
   early_stopping: 3
-  max_history_length: 35
+  max_history_length: 40
   max_title_length: 20
   embedding_dim: 128
   candidate_k: 5
