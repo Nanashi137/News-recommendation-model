@@ -86,7 +86,7 @@ def main(args):
                                         candidate_k=general_cfg["candidate_k"])
 
     split_ratio = 0.1
-    val_size = int(0.1*len(full_train_dataset))
+    val_size = int(split_ratio*len(full_train_dataset))
     train_size = len(full_train_dataset) - val_size
 
     train_dataset, val_dataset = random_split(full_train_dataset, [train_size, val_size])
