@@ -134,7 +134,9 @@ def main(args):
     trainer = pl.Trainer(max_epochs=training_cfg['general']['max_epochs'],
                         callbacks=training_callbacks,
                         log_every_n_steps=training_cfg['logging']['step'], 
-                        logger=tb_logger)
+                        logger=tb_logger,
+                        accelerator="gpu",
+                        devices=1)
 
     # Training
     print("Trainning...")
