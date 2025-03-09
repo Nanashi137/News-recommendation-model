@@ -11,7 +11,6 @@ from sklearn.metrics import roc_auc_score, ndcg_score
 
 from pytorch_lightning.utilities.grads import grad_norm
 
-
 class NewsRecommender(pl.LightningModule): 
     def __init__(self, 
                  news_encoder: nn.Module, user_encoder: nn.Module, click_predictor: nn.Module, 
