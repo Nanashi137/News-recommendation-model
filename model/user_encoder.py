@@ -7,7 +7,7 @@ from .fastformer import MultiheadFastformerAttention
 from .additive_attention import AdditiveAttention
 
 class UserEncoder(nn.Module):
-    def __init__(self, max_history_length: int=128, *, embedding_dim: int, additive_dim:int, num_heads: int=16, num_layers: int=2, dropout: float=0.3) -> None:
+    def __init__(self, max_history_length: int=512, *, embedding_dim: int, additive_dim:int, num_heads: int=16, num_layers: int=2, dropout: float=0.3) -> None:
         super(UserEncoder, self).__init__()
 
         self.max_history_length = max_history_length
